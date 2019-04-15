@@ -35,13 +35,16 @@ function VelibCardWindow() {
   const self = this;
 
   const backgroundColor = 'black';
-  const color = 'white';
-  const colorMinutes = Feature.color('orange', 'white');
+  const foregroundColor = 'white';
+  const bikeColor = 'mint green';
+  const ebikeColor = 'celeste';
+  const parkingColor = 'pastel yellow';
+  const stationColot = Feature.color('rajah', 'white');
 
   this.window = new UI.Window({
     backgroundColor: backgroundColor,
     status: {
-      color: color,
+      color: foregroundColor,
       backgroundColor: backgroundColor,
       separator: 'none',
     },
@@ -58,7 +61,7 @@ function VelibCardWindow() {
     textOverflow: 'ellipsis',
     // backgroundColor: 'black',
     //color: 'windsorTan'
-    color: color,
+    color: stationColot,
   });
 
   this.errorMessage = new UI.Text({
@@ -73,37 +76,65 @@ function VelibCardWindow() {
 
   this.bikeRemaining = new UI.Text({
     size: new Vector2(size.x, 40),
-    position: new Vector2(-40, 35),
+    position: new Vector2(-40, 30),
     font: 'leco-36-bold-numbers',
     text: '-',
-    color: 'green',
+    color: bikeColor,
     textAlign: 'center',
   });
 
-
+  this.bikeRemainingLabel = new UI.Text({
+    size: new Vector2(size.x, 40),
+    position: new Vector2(-40, 65),
+    font: 'gothic-14',
+    text: 'velib',
+    color: bikeColor,
+    textAlign: 'center',
+  });
 
   this.eBikeRemaining = new UI.Text({
     size: new Vector2(size.x, 40),
-    position: new Vector2(+40, 35),
+    position: new Vector2(+40, 30),
     text: '-',
     font: 'leco-36-bold-numbers',
-    color: 'blue',
+    color: ebikeColor,
     textAlign: 'center',
   });
+
+  this.eBikeRemainingLabel = new UI.Text({
+    size: new Vector2(size.x, 40),
+    position: new Vector2(+40, 65),
+    font: 'gothic-14',
+    text: 'e-velib',
+    color: ebikeColor,
+    textAlign: 'center',
+  });
+
 
   this.parkingRemaining = new UI.Text({
     size: new Vector2(size.x, 40),
-    position: new Vector2(+0, 90),
+    position: new Vector2(+0, 95),
     text: '-',
     font: 'leco-36-bold-numbers',
-    color: 'orange',
+    color: parkingColor,
     textAlign: 'center',
   });
 
+  this.parkingRemainingLabel = new UI.Text({
+    size: new Vector2(size.x, 40),
+    position: new Vector2(0, 85),
+    font: 'gothic-14',
+    text: 'places',
+    color: parkingColor,
+    textAlign: 'center',
+  });
   this.window.add(this.stationName);
   this.window.add(this.bikeRemaining);
+  this.window.add(this.bikeRemainingLabel);
   this.window.add(this.eBikeRemaining);
+  this.window.add(this.eBikeRemainingLabel);
   this.window.add(this.parkingRemaining);
+  this.window.add(this.parkingRemainingLabel);
   this.window.add(this.errorMessage);
 
   // this.preRefreshContents();

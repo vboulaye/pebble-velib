@@ -13,39 +13,44 @@ function VelibApp() {
     {code: '13036', label: 'Olympiades'},
   ];
 
-  const CARDS = STATIONS.map(function (station, index) {
+  self.cards = STATIONS.map(function (station) {
     const info = new VelibStationInfo(station);
-    info.index = index;
     info.show = function () {
       self.velibCardWindow.show();
       self.velibCardWindow.refresh(info);
       info.refresh(function (data) {
-        self.velibCardWindow.refresh(info);
+          self.velibCardWindow.refresh(info);
         }, function (err) {
-        self.velibCardWindow.error(err);
+          self.velibCardWindow.error(err);
         }
       );
     };
     return info;
   });
 
-  function mod(a, n) {
-    return (a + n) % n;
-  }
 
   self.velibCardWindow.window.on('click', 'up', function (e) {
-    var index = mod(cardHolder.index - 1, CARDS.length);
-    CARDS[index].show();
+    self.rotate(-1);
   });
 
   self.velibCardWindow.window.on('click', 'down', function (e) {
-    var index = mod(cardHolder.index + 1, CARDS.length);
-    CARDS[index].show();
+    self.rotate(1);
   });
 
-  var firstCard = CARDS[0];
-  firstCard.show();
-  //self.velibCardWindow.window.show();
+  self.index = 0;
+
+  self.rotate = function (direction) {
+    self.index = (self.cards.length + self.index + direction) % self.cards.length;
+    self.show();
+  }
+
+  self.show = function (idx) {
+    if (idx) {
+      self.index = idx;
+    }
+    self.cards[self.index].show();
+  }
+
 }
 
 module.exports = VelibApp;
