@@ -66,8 +66,8 @@ function VelibCardWindow() {
 
   this.errorMessage = new UI.Text({
     size: new Vector2(size.x, 28),
-    position: new Vector2(0, size.y-10),
-    font: 'gothic-28-bold',
+    position: new Vector2(0, size.y - 10),
+    font: 'gothic-14-bold',
     text: '',
     textAlign: 'center',
     textOverflow: 'ellipsis',
@@ -156,15 +156,16 @@ function VelibCardWindow() {
 VelibCardWindow.prototype.refresh = function (velibStationInfo) {
   const self = this;
 
-  this.stationName.text(velibStationInfo.getStation().label);
-
   const state = velibStationInfo.getState();
+
   if (state) {
+    self.stationName.text(velibStationInfo.getStation().label || state.station.name);
     self.bikeRemaining.text(state.nbBike);
     self.eBikeRemaining.text(state.nbEbike);
     self.parkingRemaining.text(state.nbFreeDock + state.nbFreeEDock);
     self.errorMessage.text('');
   } else {
+    self.stationName.text(velibStationInfo.getStation().label);
     self.bikeRemaining.text('-');
     self.eBikeRemaining.text('-');
     self.parkingRemaining.text('-');

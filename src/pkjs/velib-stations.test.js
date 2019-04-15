@@ -8,7 +8,7 @@ const VelibStations = require('./velib-stations.js');
 describe('the card stations state getter', function () {
   this.timeout(10000);
 
-   it('should build the list of stations on init', function (done) {
+  it('should build the list of stations on init', function (done) {
 
     var velibStations = new VelibStations();
     var state = velibStations.getState('16107');
@@ -24,6 +24,17 @@ describe('the card stations state getter', function () {
     done();
   });
 
+  it('should be able to get the closest stations', function (done) {
+    var velibStations = new VelibStations();
+    velibStations.getClosestStations(
+      {latitude: 48.8285911591, longitude: 2.37864794285},
+      function (data) {
+        expect(data).not.to.be.empty;
+        expect(data[0].station.code).to.equal('13055');
+        done();
+      }, done)
+
+  });
   it('should be able to refresh a station state', function (done) {
 
     var velibStations = new VelibStations();

@@ -5,9 +5,8 @@ try {
 } catch (e) {
   ajax = require('../../node_modules/pebblejs/dist/js/lib/ajax.js');
 }
-
-//requirePebble('lib/ajax');
-
+const geolib = require('geolib');
+// global holder for all stations
 const STATIONS_HOLDER = {};
 
 function VelibStations() {
@@ -38,31 +37,34 @@ VelibStations.prototype.getState = function (code) {
   return this.getStations()[code];
 };
 
-VelibStations.prototype.refreshState = function (code, onSuccess, onError) {
-  const self = this;
-  const stations = this.getStations();
-  const stationInfo = stations[code];
-  if (!stationInfo) {
-    return onError('unable to find station ' + code);
+VelibStations.prototype.buildPositionRectangle = function (position, distance) {
+  return {
+    topLatitude: position.latitude + distance,
+    topLongitude: position.longitude + distance,
+    bottomLatitude: position.latitude - distance,
+    bottomLongitude: position.longitude - distance,
   }
-  const gps = stationInfo.station.gps;
+};
+
+VelibStations.prototype.getStationStates = function (positionRectangle, onSuccess, onError) {
+  const self = this;
+  const stations = self.getStations();
+
   ajax(
     {
       url: 'https://www.velib-metropole.fr/webapi/map/details' +
-        '?gpsTopLatitude=' + (gps.latitude + 0.000001) +
-        '&gpsTopLongitude=' + (gps.longitude + 0.000001) +
-        '&gpsBotLatitude=' + (gps.latitude - 0.000001) +
-        '&gpsBotLongitude=' + (gps.longitude - 0.000001) +
+        '?gpsTopLatitude=' + positionRectangle.topLatitude +
+        '&gpsTopLongitude=' + positionRectangle.topLongitude +
+        '&gpsBotLatitude=' + positionRectangle.bottomLatitude +
+        '&gpsBotLongitude=' + positionRectangle.bottomLongitude +
         '&zoomLevel=20',
       type: 'json'
     },
     function (data) {
       data.forEach(function (stationState) {
         stations[stationState.station.code] = stationState;
-        if (stationState.station.code === code) {
-          onSuccess(stationState);
-        }
       });
+      onSuccess(data);
     },
     function (err) {
       if (!err) {
@@ -72,6 +74,74 @@ VelibStations.prototype.refreshState = function (code, onSuccess, onError) {
       onError(err);
     }
   );
+
+};
+
+
+VelibStations.prototype.getClosestStations = function (position, onSuccess, onError) {
+  const self = this;
+  self.getStationStates(self.buildPositionRectangle(position, 0.01),
+    function (data) {
+      var sorted = data
+        .filter(function(stationState) {return stationState.station.state==='Operative';})
+        .sort(function(a,b) {
+          a.distance = a.distance || geolib.getDistance(position, a.station.gps,1);
+          b.distance = b.distance || geolib.getDistance(position, b.station.gps,1);
+          return a.distance - b.distance;
+        });
+
+
+      var closestStations = sorted.slice(0, 10);
+
+      onSuccess(closestStations);
+    },
+    onError);
+
+}
+
+VelibStations.prototype.refreshState = function (code, onSuccess, onError) {
+  const self = this;
+  const stations = this.getStations();
+  const stationInfo = stations[code];
+  if (!stationInfo) {
+    return onError('unable to find station ' + code);
+  }
+  const gps = stationInfo.station.gps;
+  self.getStationStates(self.buildPositionRectangle(gps, 0.000001),
+    function (data) {
+      data.forEach(function (stationState) {
+        if (stationState.station.code === code) {
+          onSuccess(stationState);
+        }
+      });
+    },
+    onError);
+  // ajax(
+  //   {
+  //     url: 'https://www.velib-metropole.fr/webapi/map/details' +
+  //       '?gpsTopLatitude=' + (gps.latitude + 0.000001) +
+  //       '&gpsTopLongitude=' + (gps.longitude + 0.000001) +
+  //       '&gpsBotLatitude=' + (gps.latitude - 0.000001) +
+  //       '&gpsBotLongitude=' + (gps.longitude - 0.000001) +
+  //       '&zoomLevel=20',
+  //     type: 'json'
+  //   },
+  //   function (data) {
+  //     data.forEach(function (stationState) {
+  //       stations[stationState.station.code] = stationState;
+  //       if (stationState.station.code === code) {
+  //         onSuccess(stationState);
+  //       }
+  //     });
+  //   },
+  //   function (err) {
+  //     if (!err) {
+  //       err = 'http call error';
+  //     }
+  //     console.log("error in velib api call:" + JSON.stringify(err));
+  //     onError(err);
+  //   }
+  // );
 
 };
 
