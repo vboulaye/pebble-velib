@@ -1,5 +1,6 @@
-Pebble.addEventListener("ready",
-    function(e) {
-        console.log("Hello world! - Sent from your javascript application.");
-    }
-);
+require('pebblejs');
+
+const VelibApp = require('./velib-app.js');
+
+var velibApp = new VelibApp();
+
