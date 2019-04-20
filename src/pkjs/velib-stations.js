@@ -50,14 +50,16 @@ VelibStations.prototype.getStationStates = function (positionRectangle, onSucces
   const self = this;
   const stations = self.getStations();
 
+  let velibStationUrl = 'https://www.velib-metropole.fr/webapi/map/details' +
+    '?gpsTopLatitude=' + positionRectangle.topLatitude +
+    '&gpsTopLongitude=' + positionRectangle.topLongitude +
+    '&gpsBotLatitude=' + positionRectangle.bottomLatitude +
+    '&gpsBotLongitude=' + positionRectangle.bottomLongitude +
+    '&zoomLevel=20';
+  console.log('calling url: ' + velibStationUrl);
   ajax(
     {
-      url: 'https://www.velib-metropole.fr/webapi/map/details' +
-        '?gpsTopLatitude=' + positionRectangle.topLatitude +
-        '&gpsTopLongitude=' + positionRectangle.topLongitude +
-        '&gpsBotLatitude=' + positionRectangle.bottomLatitude +
-        '&gpsBotLongitude=' + positionRectangle.bottomLongitude +
-        '&zoomLevel=20',
+      url: velibStationUrl,
       type: 'json'
     },
     function (data) {
@@ -83,10 +85,12 @@ VelibStations.prototype.getClosestStations = function (position, onSuccess, onEr
   self.getStationStates(self.buildPositionRectangle(position, 0.01),
     function (data) {
       var sorted = data
-        .filter(function(stationState) {return stationState.station.state==='Operative';})
-        .sort(function(a,b) {
-          a.distance = a.distance || geolib.getDistance(position, a.station.gps,1);
-          b.distance = b.distance || geolib.getDistance(position, b.station.gps,1);
+        .filter(function (stationState) {
+          return stationState.station.state === 'Operative';
+        })
+        .sort(function (a, b) {
+          a.distance = a.distance || geolib.getDistance(position, a.station.gps, 1);
+          b.distance = b.distance || geolib.getDistance(position, b.station.gps, 1);
           return a.distance - b.distance;
         });
 

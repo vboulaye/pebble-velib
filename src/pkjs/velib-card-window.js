@@ -66,7 +66,7 @@ function VelibCardWindow() {
 
   this.errorMessage = new UI.Text({
     size: new Vector2(size.x, 28),
-    position: new Vector2(0, size.y - 10),
+    position: new Vector2(0, size.y - 30),
     font: 'gothic-14-bold',
     text: '',
     textAlign: 'center',
