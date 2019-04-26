@@ -39,7 +39,7 @@ function VelibCardWindow() {
   const bikeColor = 'mint green';
   const ebikeColor = 'celeste';
   const parkingColor = 'pastel yellow';
-  const stationColot = Feature.color('rajah', 'white');
+  const stationColor = Feature.color('rajah', 'white');
 
   this.window = new UI.Window({
     backgroundColor: backgroundColor,
@@ -61,12 +61,19 @@ function VelibCardWindow() {
     textOverflow: 'ellipsis',
     // backgroundColor: 'black',
     //color: 'windsorTan'
-    color: stationColot,
+    color: stationColor,
   });
+
+  this.errorMessageBox = new UI.Rect({
+    size: new Vector2(size.x, 28),
+    position: new Vector2(0, 0),
+    backgroundColor: 'pastelYellow'
+  });
+
 
   this.errorMessage = new UI.Text({
     size: new Vector2(size.x, 28),
-    position: new Vector2(0, size.y - 30),
+    position: new Vector2(0, 0),
     font: 'gothic-14-bold',
     text: '',
     textAlign: 'center',
@@ -128,6 +135,15 @@ function VelibCardWindow() {
     color: parkingColor,
     textAlign: 'center',
   });
+
+  // var refreshIcon = new UI.Image({
+  //   position: new Vector2(0, 0),
+  //   size: new Vector2(24, 24),
+  //   image: 'images/refresh-page-option.png'
+  // });
+  //
+  // this.window.add(this.refreshIcon);
+
   this.window.add(this.stationName);
   this.window.add(this.bikeRemaining);
   this.window.add(this.bikeRemainingLabel);
@@ -135,6 +151,7 @@ function VelibCardWindow() {
   this.window.add(this.eBikeRemainingLabel);
   this.window.add(this.parkingRemaining);
   this.window.add(this.parkingRemainingLabel);
+  this.window.add(this.errorMessageBox);
   this.window.add(this.errorMessage);
 
   // this.preRefreshContents();
@@ -164,18 +181,22 @@ VelibCardWindow.prototype.refresh = function (velibStationInfo) {
     self.eBikeRemaining.text(state.nbEbike);
     self.parkingRemaining.text(state.nbFreeDock + state.nbFreeEDock);
     self.errorMessage.text('');
+    self.errorMessageBox.backgroundColor('clear');
   } else {
     self.stationName.text(velibStationInfo.getStation().label);
     self.bikeRemaining.text('-');
     self.eBikeRemaining.text('-');
     self.parkingRemaining.text('-');
     self.errorMessage.text('');
+    self.errorMessageBox.backgroundColor('clear');
   }
 };
 
 VelibCardWindow.prototype.error = function (err) {
   const self = this;
   self.errorMessage.text(JSON.stringify(err));
+  self.errorMessageBox.backgroundColor('pastelYellow');
+
 };
 
 

@@ -50,7 +50,7 @@ VelibStations.prototype.getStationStates = function (positionRectangle, onSucces
   const self = this;
   const stations = self.getStations();
 
-  let velibStationUrl = 'https://www.velib-metropole.fr/webapi/map/details' +
+  var velibStationUrl = 'https://www.velib-metropole.fr/webapi/map/details' +
     '?gpsTopLatitude=' + positionRectangle.topLatitude +
     '&gpsTopLongitude=' + positionRectangle.topLongitude +
     '&gpsBotLatitude=' + positionRectangle.bottomLatitude +
@@ -82,6 +82,7 @@ VelibStations.prototype.getStationStates = function (positionRectangle, onSucces
 
 VelibStations.prototype.getClosestStations = function (position, onSuccess, onError) {
   const self = this;
+  console.log('getting stations close from ' + JSON.stringify(position));
   self.getStationStates(self.buildPositionRectangle(position, 0.01),
     function (data) {
       var sorted = data
@@ -120,52 +121,19 @@ VelibStations.prototype.refreshState = function (code, onSuccess, onError) {
       });
     },
     onError);
-  // ajax(
-  //   {
-  //     url: 'https://www.velib-metropole.fr/webapi/map/details' +
-  //       '?gpsTopLatitude=' + (gps.latitude + 0.000001) +
-  //       '&gpsTopLongitude=' + (gps.longitude + 0.000001) +
-  //       '&gpsBotLatitude=' + (gps.latitude - 0.000001) +
-  //       '&gpsBotLongitude=' + (gps.longitude - 0.000001) +
-  //       '&zoomLevel=20',
-  //     type: 'json'
-  //   },
-  //   function (data) {
-  //     data.forEach(function (stationState) {
-  //       stations[stationState.station.code] = stationState;
-  //       if (stationState.station.code === code) {
-  //         onSuccess(stationState);
-  //       }
-  //     });
-  //   },
-  //   function (err) {
-  //     if (!err) {
-  //       err = 'http call error';
-  //     }
-  //     console.log("error in velib api call:" + JSON.stringify(err));
-  //     onError(err);
-  //   }
-  // );
-
-};
+  };
 
 VelibStations.prototype.refresh = function (onSuccess, onError) {
   const self = this;
   const stations = this.getStations();
-  ajax(
-    {
-      url: 'https://www.velib-metropole.fr/webapi/map/details' +
-        '?gpsTopLatitude=49.007249184314254' +
-        '&gpsTopLongitude=2.92510986328125' +
-        '&gpsBotLatitude=48.75890477584505' +
-        '&gpsBotLongitude=1.7832183837890627' +
-        '&zoomLevel=11',
-      type: 'json'
+  self.getStationStates({
+        topLatitude:49.007249184314254,
+        topLongitude:2.92510986328125,
+        bottomLatitude:48.75890477584505,
+        bottomLongitude:1.7832183837890627
+      // '&zoomLevel=11',
     },
     function (data) {
-      data.forEach(function (station) {
-        stations[station.station.code] = station;
-      });
       localStorage.setItem('velib-stations', JSON.stringify(stations));
       onSuccess(stations);
     },

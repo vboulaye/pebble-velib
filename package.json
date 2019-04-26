@@ -41,6 +41,11 @@
           "menuIcon": true,
           "name": "IMAGE_MENU_ICON",
           "type": "bitmap"
+        },
+        {
+          "file": "images/refresh-page-option.png",
+          "name": "IMAGE_REFRESH_ICON",
+          "type": "bitmap"
         }
       ]
     }

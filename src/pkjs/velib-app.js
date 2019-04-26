@@ -49,8 +49,8 @@ function VelibApp() {
     self.show();
   });
   self.velibCardWindow.window.on('longClick', 'select', function (e) {
-    console.log('longSelect');
-    new VelibStations().refresh(function(data){
+    console.log('longSelect: refreshAll');
+    new VelibStations().refresh(function (data) {
       self.show();
     });
 
@@ -59,7 +59,7 @@ function VelibApp() {
   self.velibCardWindow.window.on('longClick', 'up', function (e) {
     console.log('longUp');
     navigator.geolocation.getCurrentPosition(function (pos) {
-      new VelibStations().getClosestStations(pos, function (data) {
+      new VelibStations().getClosestStations(pos.coords, function (data) {
         if (!data || data.length == 0) {
           console.error('no station close to te current location');
           self.velibCardWindow.error('pas de station proche');
